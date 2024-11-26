@@ -1,3 +1,6 @@
+import { MonitorService } from './../../services/monitor.service';
+import { DisciplinaService } from './../../services/disciplina.service';
+import { Monitor } from './../../models/monitor';
 import { Component } from '@angular/core';
 import { FormArray, FormBuilder } from '@angular/forms';
 
@@ -33,25 +36,25 @@ export class InscricaoComponent {
       }),
       disponibilidade: this._formBuilder.array([this.criarDisponibilidade()])
     });
-    
-    agenda = [{ week_day: 'SEGUNDA', from: '', to: '' }];
-  
 
-    constructor(private _formBuilder: FormBuilder) {
+    agenda = [{ week_day: 'SEGUNDA', from: '', to: '' }];
+
+
+    constructor(private _formBuilder: FormBuilder, private DisciplinaService: DisciplinaService, private MonitorService: MonitorService) {
     }
 
     addAgenda() {
       this.agenda.push({ week_day: 'SEGUNDA', from: '', to: '' });
     }
-  
+
     get disponibilidade(): FormArray {
       return this.monitorForm.get('disponibilidade') as FormArray;
     }
-  
+
     addDisponibilidade() {
       this.disponibilidade.push(this.criarDisponibilidade());
     }
-  
+
     criarDisponibilidade() {
       return this._formBuilder.group({
         diaSemana: [''],
@@ -59,8 +62,13 @@ export class InscricaoComponent {
         ate: ['']
       });
     }
-  
+
     onSalvar() {
-      
+
+      let monitor : Monitor = new Monitor();
+      monitor = Object.assign(monitor, this.monitorForm.value)
+      this.MonitorService.inserir(monitor)
+      .subscribe(data => console.log(data))
+
     }
 }
